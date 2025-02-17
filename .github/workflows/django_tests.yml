@@ -18,10 +18,10 @@ jobs:
         env:
           POSTGRES_USER: availbility
           POSTGRES_PASSWORD: availbility
-          POSTGRES_DB: test_db
+          POSTGRES_DB: availbility_db  # ✅ Теперь имя совпадает
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready -U user" --health-interval=10s --health-timeout=5s --health-retries=5
+        options: --health-cmd="pg_isready -U availbility" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
     - name: Checkout репозитория
@@ -35,12 +35,19 @@ jobs:
     - name: Установка зависимостей
       run: |
         pip install -r requirements.txt
-        pip install pytest pytest-django httpx
+        pip install pytest pytest-django httpx dj-database-url
 
     - name: Настройка переменных окружения
       run: |
         echo "DJANGO_SECRET_KEY=mysecretkey" >> $GITHUB_ENV
+        echo "POSTGRES_DB=availbility_db" >> $GITHUB_ENV
+        echo "POSTGRES_USER=availbility" >> $GITHUB_ENV
+        echo "POSTGRES_PASSWORD=availbility" >> $GITHUB_ENV
+        echo "POSTGRES_HOST=postgres" >> $GITHUB_ENV
         echo "DATABASE_URL=postgres://availbility:availbility@postgres:5432/availbility_db" >> $GITHUB_ENV
+
+    - name: Ожидание запуска PostgreSQL
+      run: sleep 10 
 
     - name: Запуск миграций
       run: python manage.py migrate

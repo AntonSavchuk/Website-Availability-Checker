@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+import dj_database_url
+
 
 from pathlib import Path
 
@@ -86,16 +88,8 @@ WSGI_APPLICATION = "availbilityChecker.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "availbility",
-        "USER": "availbility",
-        "PASSWORD": "availbility",
-        "HOST": "localhost",
-        "PORT": 5432,
-    }
+    "default": dj_database_url.config(default=f"postgres://{os.getenv('POSTGRES_USER', 'availbility')}:{os.getenv('POSTGRES_PASSWORD', 'availbility')}@{os.getenv('POSTGRES_HOST', 'localhost')}:5432/{os.getenv('POSTGRES_DB', 'availbility')}")
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
