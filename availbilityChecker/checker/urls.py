@@ -6,7 +6,7 @@ from .views import WebsiteViewSet, SiteStatusViewSet
 app_name = 'checker'
 
 router = DefaultRouter()
-router.register(r'websites', WebsiteViewSet)
+router.register(r'websites', WebsiteViewSet, basename='website')
 router.register(r'status', SiteStatusViewSet)
 
 urlpatterns = [
