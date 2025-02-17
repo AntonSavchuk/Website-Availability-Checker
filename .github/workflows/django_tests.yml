@@ -1,0 +1,49 @@
+name: Django CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U user" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+    - name: Checkout репозитория
+      uses: actions/checkout@v3
+
+    - name: Установка Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+
+    - name: Установка зависимостей
+      run: |
+        pip install -r requirements.txt
+        pip install pytest pytest-django httpx
+
+    - name: Настройка переменных окружения
+      run: |
+        echo "DJANGO_SECRET_KEY=mysecretkey" >> $GITHUB_ENV
+        echo "DATABASE_URL=postgres://user:password@localhost:5432/test_db" >> $GITHUB_ENV
+
+    - name: Запуск миграций
+      run: python manage.py migrate
+
+    - name: Запуск тестов
+      run: pytest
