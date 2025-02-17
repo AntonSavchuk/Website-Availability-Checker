@@ -18,10 +18,14 @@ jobs:
         env:
           POSTGRES_USER: availbility
           POSTGRES_PASSWORD: availbility
-          POSTGRES_DB: availbility_db  # ✅ Теперь имя совпадает
+          POSTGRES_DB: availbility_db
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready -U availbility" --health-interval=10s --health-timeout=5s --health-retries=5
+        options: >-
+          --health-cmd="pg_isready -U availbility"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
     - name: Checkout репозитория
@@ -43,11 +47,18 @@ jobs:
         echo "POSTGRES_DB=availbility_db" >> $GITHUB_ENV
         echo "POSTGRES_USER=availbility" >> $GITHUB_ENV
         echo "POSTGRES_PASSWORD=availbility" >> $GITHUB_ENV
-        echo "POSTGRES_HOST=postgres" >> $GITHUB_ENV
-        echo "DATABASE_URL=postgres://availbility:availbility@postgres:5432/availbility_db" >> $GITHUB_ENV
+        echo "POSTGRES_HOST=127.0.0.1" >> $GITHUB_ENV
+        echo "DATABASE_URL=postgres://availbility:availbility@127.0.0.1:5432/availbility_db" >> $GITHUB_ENV
 
     - name: Ожидание запуска PostgreSQL
-      run: sleep 10 
+      run: |
+        echo "Ожидание запуска базы данных..."
+        for i in {1..10}; do
+          nc -z 127.0.0.1 5432 && echo "PostgreSQL запущен!" && exit 0
+          echo "Ожидание 5 секунд..."
+          sleep 5
+        done
+        echo "Ошибка: PostgreSQL не запустился" && exit 1
 
     - name: Запуск миграций
       run: python manage.py migrate
