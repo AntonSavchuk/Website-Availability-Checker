@@ -40,7 +40,7 @@ jobs:
     - name: Настройка переменных окружения
       run: |
         echo "DJANGO_SECRET_KEY=mysecretkey" >> $GITHUB_ENV
-        echo "DATABASE_URL=postgres://user:password@localhost:5432/test_db" >> $GITHUB_ENV
+        echo "DATABASE_URL=postgres://availbility:availbility@postgres:5432/test_db" >> $GITHUB_ENV
 
     - name: Запуск миграций
       run: python manage.py migrate
