@@ -89,7 +89,14 @@ WSGI_APPLICATION = "availbilityChecker.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRES_DB", "availbility"),
+        'USER': os.getenv("POSTGRES_USER", "availbility"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "availbility"),
+        'HOST': os.getenv("POSTGRES_HOST", "127.0.0.1"),
+        'PORT': os.getenv("POSTGRES_PORT", "5432"),
+    }
 }
 
 # Password validation
